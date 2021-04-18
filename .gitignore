@@ -1,0 +1,29 @@
+/las2peer-akg/output/
+/las2peer-akg/export/
+/node-storage/
+/.las2peer/
+/tmp/
+/log/
+/las2peer-akg/log/
+/lib/
+/etc/ivy/ivy.jar
+/service/
+/out/
+/.idea/
+*.iml
+.DS_Store
+/.settings/
+/junitvmwatcher*.properties
+/junit*.properties
+/etc/startup/
+*.secret
+archiva_credentials.xml
+.classpath
+.project
+.settings
+/bin
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
