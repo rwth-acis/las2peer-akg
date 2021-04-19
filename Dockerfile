@@ -15,6 +15,8 @@ WORKDIR /src
 USER las2peer
 RUN dos2unix gradlew
 RUN dos2unix /src/docker-entrypoint.sh
+RUN chmod -R a+rwx /src
+RUN chmod +x /src/docker-entrypoint.sh
 RUN chmod +x gradlew && ./gradlew build --exclude-task test
 RUN dos2unix /src/docker-entrypoint.sh
 RUN dos2unix /src/etc/i5.las2peer.connectors.webConnector.WebConnector.properties
