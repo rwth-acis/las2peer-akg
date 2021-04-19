@@ -17,7 +17,8 @@ RUN dos2unix gradlew
 RUN dos2unix /src/docker-entrypoint.sh
 RUN chmod +x gradlew && ./gradlew build --exclude-task test
 RUN dos2unix /src/docker-entrypoint.sh
-#RUN dos2unix /src/las2peer-akg/etc/ant_configuration/service.properties
+RUN dos2unix /src/etc/i5.las2peer.connectors.webConnector.WebConnector.properties
+RUN dos2unix /src/etc/i5.las2peer.services.servicePackage.akgService.properties
 
 EXPOSE $HTTP_PORT
 EXPOSE $HTTPS_PORT

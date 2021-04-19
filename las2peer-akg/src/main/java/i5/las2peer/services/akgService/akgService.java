@@ -116,6 +116,41 @@ public class akgService extends RESTService {
 		// und was f������r dich neu ist. \n\n M������chtest du noch weitere Assoziationen
 		// abgleichen?
 	}
+	
+	
+	@POST
+	@Path("/returnContent")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "REPLACE THIS WITH AN APPROPRIATE FUNCTION NAME", notes = "REPLACE THIS WITH YOUR NOTES TO THE FUNCTION")
+	@ApiResponses(value = {
+			@ApiResponse(code = HttpURLConnection.HTTP_OK, message = "REPLACE THIS WITH YOUR OK MESSAGE") })
+	public Response returnContent(String body) throws ParseException, IOException {
+		System.out.println(body);
+		JSONObject jsonBody = new JSONObject();
+		JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
+		jsonBody = (JSONObject) p.parse(body);
+		String entityName = jsonBody.getAsString("entityName");
+		JSONObject entities = (JSONObject) jsonBody.get("entities");
+		if (entities.get(entityName) == null) {
+			// error, given entityname is not part of the recognized entities
+			// return something
+			jsonBody = new JSONObject();
+			jsonBody.put("text",
+					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
+			return Response.ok().entity(jsonBody).build();
+		}
+		String content = jsonBody.getAsString(entities.getAsString(entityName));
+		
+		jsonBody = new JSONObject();
+		jsonBody.put("text", content);
+		return Response.ok().entity(jsonBody).build();
+		// $X von deinen assoziierten Begriffen sind auch Schl������sselkonzepte des Textes.
+		// \n Versuche sp������ter beim Lesen noch mehr Schl������sselbegriffe zu finden und
+		// reflektiere, wie du das Gelesene in dein bisheriges Wissen integrieren kannst
+		// und was f������r dich neu ist. \n\n M������chtest du noch weitere Assoziationen
+		// abgleichen?
+	}
 
 
 }
