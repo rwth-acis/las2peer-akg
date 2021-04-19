@@ -13,10 +13,10 @@ WORKDIR /src
 
 # run the rest as unprivileged user
 USER las2peer
-#RUN dos2unix gradlew
-#RUN dos2unix /src/docker-entrypoint.sh
-RUN chmod -R a+rwx /src
-RUN chmod +x /src/docker-entrypoint.sh
+RUN dos2unix gradlew
+RUN dos2unix /src/docker-entrypoint.sh
+#RUN chmod -R a+rwx /src
+#RUN chmod +x /src/docker-entrypoint.sh
 RUN chmod +x gradlew && ./gradlew build --exclude-task test
 #RUN dos2unix /src/docker-entrypoint.sh
 #RUN dos2unix /src/etc/i5.las2peer.connectors.webConnector.WebConnector.properties
@@ -25,4 +25,6 @@ RUN chmod +x gradlew && ./gradlew build --exclude-task test
 EXPOSE $HTTP_PORT
 EXPOSE $HTTPS_PORT
 EXPOSE $LAS2PEER_PORT
+RUN chmod +x /src/docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 ENTRYPOINT ["/src/docker-entrypoint.sh"]
