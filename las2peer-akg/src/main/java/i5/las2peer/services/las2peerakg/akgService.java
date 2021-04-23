@@ -90,15 +90,16 @@ public class akgService extends RESTService {
 		if (userWord.length != 5) {
 			// return error that the number of examples is not right
 			jsonBody = new JSONObject();
-			jsonBody.put("text", "Bitte gib nur 5 Beispiele an ;)");
+			jsonBody.put("text", "Bitte gib 5 Beispiele an ;)");
 			jsonBody.put("closeContext", false);
 			return Response.ok().entity(jsonBody).build();
 
 		}
+		replaceUmlaute(intent).replaceAll("\\s+", "")
 		int matches = 0;
 		for (String word : userWord) {
 			for (String correctWord : correctWords) {
-				if (word.toLowerCase().equals(correctWord.toLowerCase())) {
+				if (word.toLowerCase().replaceAll("\\s+", "").equals(correctWord.toLowerCase().replaceAll("\\s+", ""))) {
 					matches++;
 				}
 			}
