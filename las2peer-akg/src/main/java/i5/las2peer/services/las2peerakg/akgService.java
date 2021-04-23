@@ -95,7 +95,6 @@ public class akgService extends RESTService {
 			return Response.ok().entity(jsonBody).build();
 
 		}
-		replaceUmlaute(intent).replaceAll("\\s+", "")
 		int matches = 0;
 		for (String word : userWord) {
 			for (String correctWord : correctWords) {
