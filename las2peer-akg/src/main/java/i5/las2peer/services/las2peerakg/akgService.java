@@ -101,7 +101,7 @@ public class akgService extends RESTService {
 			for (String correctWord : correctWords) {
 				if (word.toLowerCase().replaceAll("\\s+", "").equals(correctWord.toLowerCase().replaceAll("\\s+", ""))) {
 					matches++;
-					if(anwsers.equals("")) {
+					if(answers.equals("")) {
 						answers += correctWord.toLowerCase().replaceAll("\\s+", ""); 
 					} else {
 						answers += ", " + correctWord.toLowerCase().replaceAll("\\s+", "");
