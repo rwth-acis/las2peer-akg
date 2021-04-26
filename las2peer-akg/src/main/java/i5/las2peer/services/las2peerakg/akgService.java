@@ -96,17 +96,23 @@ public class akgService extends RESTService {
 
 		}
 		int matches = 0;
+		String answers = "";
 		for (String word : userWord) {
 			for (String correctWord : correctWords) {
 				if (word.toLowerCase().replaceAll("\\s+", "").equals(correctWord.toLowerCase().replaceAll("\\s+", ""))) {
 					matches++;
+					if(anwsers.equals("")) {
+						answers += correctWord.toLowerCase().replaceAll("\\s+", ""); 
+					} else {
+						answers += ", " + correctWord.toLowerCase().replaceAll("\\s+", "");
+					}
 				}
 			}
 		}
 
 		jsonBody = new JSONObject();
 		jsonBody.put("text", matches
-				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes.  \r\n"
+				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes (" + answers + ").  \r\n"
 				+ " Versuche sp\u00E4ter beim Lesen noch mehr Schl\u00FCsselbegriffe zu finden und reflektiere, wie du das Gelesene in dein bisheriges Wissen integrieren kannst und was f\u00FCr dich neu ist.  \r\n"
 				+ " \r\n" + " M\u00F6chtest du noch weitere Assoziationen abgleichen?");
 		return Response.ok().entity(jsonBody).build();
