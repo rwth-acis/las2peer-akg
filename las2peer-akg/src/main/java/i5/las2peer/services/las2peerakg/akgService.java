@@ -128,7 +128,7 @@ public class akgService extends RESTService {
 		JSONObject object = (JSONObject) p
 				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" + "compareWords"
 						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
-						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/something/"
+						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 		JSONObject context = (JSONObject) p
 				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'userAnswers':'"
@@ -171,6 +171,7 @@ public class akgService extends RESTService {
 		JSONObject jsonBody = new JSONObject();
 		JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
 		jsonBody = (JSONObject) p.parse(body);
+		String userMail = jsonBody.getAsString("email");
 		String entityName = jsonBody.getAsString("entityName");
 		JSONObject entities = (JSONObject) jsonBody.get("entities");
 		if (entities.get(entityName) == null) {
@@ -185,6 +186,36 @@ public class akgService extends RESTService {
 		
 		// xapi nutzer vergleicht/compared terme + seminar thema 
 		//monitor event : ntzer hat verglichen
+		JSONObject actor = new JSONObject();
+		actor.put("objectType", "Agent");
+		JSONObject account = new JSONObject();
+
+		account.put("name", encryptThisString(userMail));
+		account.put("homePage", "https://chat.tech4comp.dbis.rwth-aachen.de");
+		actor.put("account", account);
+		// compared_words
+		JSONObject verb = (JSONObject) p
+				.parse(new String("{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/return_content'}"));
+		JSONObject object = (JSONObject) p
+				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" + "returnContent"
+						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
+						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
+						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
+		JSONObject context = (JSONObject) p
+				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'returnedContent':'"
+						+ content + "'}}}"));
+		JSONObject xAPI = new JSONObject();
+
+		xAPI.put("authority", p.parse(
+				new String("{'objectType': 'Agent','name': 'New Client', 'mbox': 'mailto:hello@learninglocker.net'}")));
+		xAPI.put("context", context); //
+		// xAPI.put("timestamp", java.time.LocalDateTime.now());
+		xAPI.put("actor", actor);
+		xAPI.put("object", object);
+		xAPI.put("verb", verb);
+		
+		System.out.println(xAPI.toString());
+		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
 		jsonBody = new JSONObject();
 		jsonBody.put("text", content);
 		return Response.ok().entity(jsonBody).build();
