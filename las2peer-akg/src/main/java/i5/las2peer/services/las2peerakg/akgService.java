@@ -36,6 +36,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Contact;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
+import i5.las2peer.api.logging.MonitoringEvent;
 import io.swagger.annotations.SwaggerDefinition;
 
 import net.minidev.json.JSONObject;
@@ -75,6 +76,7 @@ public class akgService extends RESTService {
 		JSONObject jsonBody = new JSONObject();
 		JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
 		jsonBody = (JSONObject) p.parse(body);
+		String userMail = jsonBody.getAsString("email");
 		String entityName = jsonBody.getAsString("entityName");
 		JSONObject entities = (JSONObject) jsonBody.get("entities");
 		if (entities.get(entityName) == null) {
@@ -110,6 +112,39 @@ public class akgService extends RESTService {
 			}
 		}
 
+		// xapi nutzer vergleicht/compared terme + seminar thema 
+		//monitor event : ntzer hat verglichen
+		
+		JSONObject actor = new JSONObject();
+		actor.put("objectType", "Agent");
+		JSONObject account = new JSONObject();
+
+		account.put("name", encryptThisString(userMail));
+		account.put("homePage", "https://chat.tech4comp.dbis.rwth-aachen.de");
+		actor.put("account", account);
+		// compared_words
+		JSONObject verb = (JSONObject) p
+				.parse(new String("{'display':{'en-US':'compared_words'},'id':'https://tech4comp.de/xapi/verb/compared_words'}"));
+		JSONObject object = (JSONObject) p
+				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" + "compareWords"
+						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
+						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/something/"
+						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
+		JSONObject context = (JSONObject) p
+				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'userAnswers':'"
+						+ jsonBody.getAsString("msg") + "'}}}"));
+		JSONObject xAPI = new JSONObject();
+
+		xAPI.put("authority", p.parse(
+				new String("{'objectType': 'Agent','name': 'New Client', 'mbox': 'mailto:hello@learninglocker.net'}")));
+		xAPI.put("context", context); //
+		// xAPI.put("timestamp", java.time.LocalDateTime.now());
+		xAPI.put("actor", actor);
+		xAPI.put("object", object);
+		xAPI.put("verb", verb);
+		
+		
+		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
 		jsonBody = new JSONObject();
 		jsonBody.put("text", matches
 				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes (" + answers + ").  \r\n"
@@ -148,6 +183,8 @@ public class akgService extends RESTService {
 		}
 		String content = jsonBody.getAsString(entities.getAsString(entityName));
 		
+		// xapi nutzer vergleicht/compared terme + seminar thema 
+		//monitor event : ntzer hat verglichen
 		jsonBody = new JSONObject();
 		jsonBody.put("text", content);
 		return Response.ok().entity(jsonBody).build();
@@ -158,5 +195,36 @@ public class akgService extends RESTService {
 		// abgleichen?
 	}
 
+	
+	public static String encryptThisString(String input) {
+		try {
+			// getInstance() method is called with algorithm SHA-384
+			MessageDigest md = MessageDigest.getInstance("SHA-384");
+
+			// digest() method is called
+			// to calculate message digest of the input string
+			// returned as array of byte
+			byte[] messageDigest = md.digest(input.getBytes());
+
+			// Convert byte array into signum representation
+			BigInteger no = new BigInteger(1, messageDigest);
+
+			// Convert message digest into hex value
+			String hashtext = no.toString(16);
+
+			// Add preceding 0s to make it 32 bit
+			while (hashtext.length() < 32) {
+				hashtext = "0" + hashtext;
+			}
+
+			// return the HashText
+			return hashtext;
+		}
+
+		// For specifying wrong message digest algorithms
+		catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }
