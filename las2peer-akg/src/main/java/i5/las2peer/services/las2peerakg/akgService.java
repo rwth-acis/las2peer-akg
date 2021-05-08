@@ -130,9 +130,13 @@ public class akgService extends RESTService {
 						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
 						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
+		try {
 		JSONObject context = (JSONObject) p
 				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'userAnswers':'"
-						+ jsonBody.getAsString("msg") + "'}}}"));
+						+ jsonBody.getAsString("msg") + "', 'word1':'"+ jsonBody.getAsString("msg").split(",")[0].toLowerCase().replaceAll("\\s","") +"', 'word2':'"+ jsonBody.getAsString("msg").split(",")[1].toLowerCase().replaceAll("\\s","") +"', 'word3':'"+ jsonBody.getAsString("msg").split(",")[2].toLowerCase().replaceAll("\\s","") +"', 'word4':'"+ jsonBody.getAsString("msg").split(",")[3].toLowerCase().replaceAll("\\s","") +"', 'word5':'"+ jsonBody.getAsString("msg").split(",")[4].toLowerCase().replaceAll("\\s","") +"','score':'"+ matches+"'}}}"));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		JSONObject xAPI = new JSONObject();
 
 		xAPI.put("authority", p.parse(
