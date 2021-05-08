@@ -148,6 +148,7 @@ public class akgService extends RESTService {
 		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
 		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_96, xAPI.toString());
 		} catch(Exception e) {
+			System.out.println("error?");
 			e.printStackTrace();
 		}
 
