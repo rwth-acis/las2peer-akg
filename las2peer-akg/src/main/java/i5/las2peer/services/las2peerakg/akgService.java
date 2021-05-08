@@ -134,9 +134,6 @@ public class akgService extends RESTService {
 		JSONObject context = (JSONObject) p
 				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'userAnswers':'"
 						+ jsonBody.getAsString("msg") + "', 'word1':'"+ jsonBody.getAsString("msg").split(",")[0].toLowerCase().replaceAll("\\s","") +"', 'word2':'"+ jsonBody.getAsString("msg").split(",")[1].toLowerCase().replaceAll("\\s","") +"', 'word3':'"+ jsonBody.getAsString("msg").split(",")[2].toLowerCase().replaceAll("\\s","") +"', 'word4':'"+ jsonBody.getAsString("msg").split(",")[3].toLowerCase().replaceAll("\\s","") +"', 'word5':'"+ jsonBody.getAsString("msg").split(",")[4].toLowerCase().replaceAll("\\s","") +"','score':'"+ matches+"'}}}"));
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
 		JSONObject xAPI = new JSONObject();
 
 		xAPI.put("authority", p.parse(
@@ -150,6 +147,10 @@ public class akgService extends RESTService {
 		
 		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
 		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_96, xAPI.toString());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 		jsonBody = new JSONObject();
 		jsonBody.put("text", matches
 				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes (" + answers + ").  \r\n"
