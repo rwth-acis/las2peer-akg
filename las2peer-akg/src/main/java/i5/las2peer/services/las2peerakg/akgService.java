@@ -149,6 +149,7 @@ public class akgService extends RESTService {
 		
 		
 		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
+		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_96, xAPI.toString());
 		jsonBody = new JSONObject();
 		jsonBody.put("text", matches
 				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes (" + answers + ").  \r\n"
