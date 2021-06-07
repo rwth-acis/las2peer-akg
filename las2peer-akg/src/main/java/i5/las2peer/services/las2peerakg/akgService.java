@@ -13,7 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,8 +28,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 import i5.las2peer.api.Context;
 import i5.las2peer.api.security.UserAgent;
+import i5.las2peer.connectors.webConnector.client.ClientResponse;
+import i5.las2peer.connectors.webConnector.client.MiniClient;
 import i5.las2peer.restMapper.RESTService;
 import i5.las2peer.restMapper.annotations.ServicePath;
 import io.swagger.annotations.Api;
@@ -190,7 +196,6 @@ public class akgService extends RESTService {
 			return Response.ok().entity(jsonBody).build();
 		}
 		String content = jsonBody.getAsString(entities.getAsString(entityName));
-		
 		// xapi nutzer vergleicht/compared terme + seminar thema 
 		//monitor event : ntzer hat verglichen
 		JSONObject actor = new JSONObject();
@@ -226,12 +231,108 @@ public class akgService extends RESTService {
 		jsonBody = new JSONObject();
 		jsonBody.put("text", content);
 		return Response.ok().entity(jsonBody).build();
-		// $X von deinen assoziierten Begriffen sind auch Schl������sselkonzepte des Textes.
-		// \n Versuche sp������ter beim Lesen noch mehr Schl������sselbegriffe zu finden und
-		// reflektiere, wie du das Gelesene in dein bisheriges Wissen integrieren kannst
-		// und was f������r dich neu ist. \n\n M������chtest du noch weitere Assoziationen
-		// abgleichen?
+
 	}
+	
+	@POST
+	@Path("/suggestMaterial")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "REPLACE THIS WITH AN APPROPRIATE FUNCTION NAME", notes = "REPLACE THIS WITH YOUR NOTES TO THE FUNCTION")
+	@ApiResponses(value = {
+			@ApiResponse(code = HttpURLConnection.HTTP_OK, message = "REPLACE THIS WITH YOUR OK MESSAGE") })
+	public Response suggestMaterial(String body) throws ParseException, IOException {
+		System.out.println(body);
+		JSONObject jsonBody = new JSONObject();
+		JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
+		jsonBody = (JSONObject) p.parse(body);
+		String entityName = jsonBody.getAsString("entityName");
+		JSONObject entities = (JSONObject) jsonBody.get("entities");
+		if (entities.get(entityName) == null) {
+			// error, given entityname is not part of the recognized entities
+			// return something
+			jsonBody = new JSONObject();
+			jsonBody.put("text",
+					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
+			return Response.ok().entity(jsonBody).build();
+		}
+		entityName = entities.getAsString(entityName);
+		String text = jsonBody.getAsString("msg");
+		String[] words = text.split(",");
+		MiniClient client = new MiniClient();
+		// add var for address here
+		//client.setConnectorEndpoint("http://137.226.232.175:32303");
+		client.setConnectorEndpoint("http://localhost:3000");
+		HashMap<String, String> headers = new HashMap<String, String>();
+		int counter = 0;
+		String s = "";
+		String graph = "";
+		if(entityName.equals("Bildungssysteme")) {
+			graph = "http://tech4comp.de/knowledgeMap/beffea78cb3db849bb00c36faded0e8e";
+		} else if(entityName.equals("Inklusion in Kanada")) {
+			graph = "http://tech4comp.de/knowledgeMap/9553a8dac552d16e9a4aa51de68541ae";
+		} else if(entityName.equals("Deutschland und Kanada im Vergleich")) {
+			graph = "http://tech4comp.de/knowledgeMap/28d0aafb7f9cda9420d2d1c55b32bc41";
+		} else if(entityName.equals("Steuerung im Bildungswesen")) {
+			graph = "http://tech4comp.de/knowledgeMap/dfe11f23419d21ee12f98044a26dc055";
+		} else if(entityName.equals("Bildungswesen der BRD")) {
+			graph = "http://tech4comp.de/knowledgeMap/ebe36f244610da368fcfd6cef4a5ec63";
+		}else if(entityName.equals("Bildung")) {
+			graph = "http://tech4comp.de/knowledgeMap/ul/biwi/laura";
+		}else if(entityName.equals("Digitalisierung und Bildungswelt")) {
+			graph = "http://tech4comp.de/knowledgeMap/e9758f807da573481a76927aff4cfbfa";
+		}else if(entityName.equals("Erziehung")) {
+			graph = "http://tech4comp.de/knowledgeMap/6a2f4e0eb47907c6b026600e566c6677";
+		}else if(entityName.equals("Führungsstile")) {
+			graph = "http://tech4comp.de/knowledgeMap/204d681f56e4c87232193794a457f603";
+		}else if(entityName.equals("Sozialisation")) {
+			graph= "http://tech4comp.de/knowledgeMap/72909bd4c7ae025d65351314455c638f";
+		}else if(entityName.equals("Sozialisation und Medien")) {
+			graph= "http://tech4comp.de/knowledgeMap/26b00db86194a83b0e18b7c2652cfeb6";
+		}else if(entityName.equals("Bildungsgerechtigkeit")) {
+			graph = "http://tech4comp.de/knowledgeMap/98dc514f500ab6de937f0c9c7736eb87";
+		}else if(entityName.equals("Meritokratische Illusion")) {
+			graph = "http://tech4comp.de/knowledgeMap/69214204b3bad1907f85b2e5debd5c0d";
+		}else if(entityName.equals("PISA")) {
+			graph = "http://tech4comp.de/knowledgeMap/004d7bd0b4cd76748598815569035e02";
+		}else if(entityName.equals("PISA-Ergebnisse")) {
+			graph = "http://tech4comp.de/knowledgeMap/38c740da987008ec6af185b70f75776f";
+		}else if(entityName.equals("Inklusion und Bildungsgerechtigkeit")) {
+			graph = "http://tech4comp.de/knowledgeMap/325ea363af0e79171ed4152c2aaee308";
+		}else if(entityName.equals("Massnahmen zur Inklusion in Sachsen")) {
+			graph = "http://tech4comp.de/knowledgeMap/fbb4a0a6099673ae0f5f666a3ea97c03";
+		}else if(entityName.equals("Inklusiver Unterricht in Kanada")) {
+			graph = "http://tech4comp.de/knowledgeMap/ca19296fab26fbf27c1689ff81b1c58e";
+		}else if(entityName.equals("Kritik am kanadischen Bildungssystem")) {
+			graph = "http://tech4comp.de/knowledgeMap/efa2782c5556dc4f345e35d41b2880a4";
+		}else {
+			graph= "noname";
+		}
+		for (int i = 0; i < words.length; i++) {
+			JSONObject reqbody = new JSONObject();
+			JSONArray terms = new JSONArray();
+			terms.add(words[i].trim());
+			reqbody.put("terms", terms);
+			reqbody.put("graph", graph);
+			ClientResponse r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
+					"application/json", "application/json", headers);
+			JSONObject result = (JSONObject) p.parse(r.getResponse());
+			if (result.keySet().size() > 1) {
+				counter++;
+				JSONArray materials = (JSONArray) result.get("@graph");
+				for (Object j : materials) {
+					JSONObject jo = (JSONObject) j;
+					s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
+							+ jo.getAsString("link") + ")";
+				}
+			}
+		}
+		jsonBody = new JSONObject();
+		jsonBody.put("text", s);
+		return Response.ok().entity(jsonBody).build();
+	}
+
+	
 
 	
 	public static String encryptThisString(String input) {
