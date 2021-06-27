@@ -26,11 +26,11 @@ jobs:
         files: ./template_project/export/jacoco/test/jacocoTestReport.xml
     - name: Build the Docker image
       run: | 
-        docker build -t registry.tech4comp.dbis.rwth-aachen.de/rwthacis/akg:${{ steps.extract_branch.outputs.branch }} .
+        docker build -t registry.tech4comp.dbis.rwth-aachen.de/rwthacis/akg:main .
     - name: Push to registry
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  
         DOCKER_PW: ${{ secrets.DOCKER_PW }}
       run: |
         docker login -u $DOCKER_USERNAME -p $DOCKER_PW registry.tech4comp.dbis.rwth-aachen.de
-        docker push registry.tech4comp.dbis.rwth-aachen.de/rwthacis/akg:${{ steps.extract_branch.outputs.branch }}     
+        docker push registry.tech4comp.dbis.rwth-aachen.de/rwthacis/akg:main    
