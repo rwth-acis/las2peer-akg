@@ -1,4 +1,4 @@
-package i5.las2peer.services.akgService;
+package i5.las2peer.services.las2peerakg;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
