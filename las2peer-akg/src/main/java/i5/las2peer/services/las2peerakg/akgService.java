@@ -261,7 +261,7 @@ public class akgService extends RESTService {
 		String[] words = text.split(",");
 		MiniClient client = new MiniClient();
 		// add var for address here
-		//client.setConnectorEndpoint("http://137.226.232.175:32303");
+		client.setConnectorEndpoint("http://137.226.232.175:32303");
 		client.setConnectorEndpoint("http://localhost:3000");
 		HashMap<String, String> headers = new HashMap<String, String>();
 		int counter = 0;
