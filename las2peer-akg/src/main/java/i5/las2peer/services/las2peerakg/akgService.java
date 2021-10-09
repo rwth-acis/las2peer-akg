@@ -88,6 +88,9 @@ public class akgService extends RESTService {
 		if (entities.get(entityName) == null) {
 			// error, given entityname is not part of the recognized entities
 			// return something
+			System.out.println(entities);
+			System.out.println(entityName);
+			System.out.println(entities.get(entityName));
 			jsonBody = new JSONObject();
 			jsonBody.put("text",
 					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
