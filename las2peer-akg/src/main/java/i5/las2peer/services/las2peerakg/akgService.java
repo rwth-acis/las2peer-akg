@@ -329,6 +329,7 @@ public class akgService extends RESTService {
 				}
 			}
 		}
+		System.out.println(s);
 		jsonBody = new JSONObject();
 		jsonBody.put("text", s);
 		return Response.ok().entity(jsonBody).build();
