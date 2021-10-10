@@ -325,8 +325,11 @@ public class akgService extends RESTService {
 				JSONArray materials = (JSONArray) result.get("@graph");
 				for (Object j : materials) {
 					JSONObject jo = (JSONObject) j;
+					if(!jo.getAsString("title").equals("")) {
 					s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
 							+ jo.getAsString("link") + ")";
+					System.out.println("Adding Material");
+					}
 				}
 			}
 		}
