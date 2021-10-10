@@ -96,6 +96,9 @@ public class akgService extends RESTService {
 					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
 			return Response.ok().entity(jsonBody).build();
 		}
+		System.out.println(entities);
+		System.out.println(entityName);
+		System.out.println(entities.get(entityName));
 		String[] correctWords = jsonBody.getAsString(entities.getAsString(entityName)).split(",");
 		String[] userWord = jsonBody.getAsString("msg").split(",");
 		if (userWord.length != 5) {
