@@ -335,7 +335,7 @@ public class akgService extends RESTService {
 			System.out.println("done with word" + i);
 		}
 		System.out.println("text is "+s);
-		jsonResponse = new JSONObject();
+		JSONObject jsonResponse = new JSONObject();
 		if(s.equals("")) {
 			jsonResponse.put("text", jsonBody.getAsString("missingMaterial"));
 			System.out.println("Result empty");
