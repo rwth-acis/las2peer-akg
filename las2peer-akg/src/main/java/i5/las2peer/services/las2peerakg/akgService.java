@@ -332,7 +332,11 @@ public class akgService extends RESTService {
 		}
 		System.out.println(s);
 		jsonBody = new JSONObject();
-		jsonBody.put("text", s);
+		if(s.equals("")) {
+			jsonBody.put("text", jsonBody.getAsString("missingMaterial"));
+		} else {
+			jsonBody.put("text", s);
+		}
 		return Response.ok().entity(jsonBody).build();
 	}
 
