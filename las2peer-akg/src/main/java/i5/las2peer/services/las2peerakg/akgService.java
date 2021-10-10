@@ -99,7 +99,7 @@ public class akgService extends RESTService {
 		System.out.println(entities);
 		System.out.println(entityName);
 		System.out.println(entities.get(entityName));
-		String[] correctWords = jsonBody.getAsString(entities.getAsString(entityName)).split(",");
+		String[] correctWords = jsonBody.getAsString(entities.getAsString(entityName).getAsString("value")).split(",");
 		String[] userWord = jsonBody.getAsString("msg").split(",");
 		if (userWord.length != 5) {
 			// return error that the number of examples is not right
