@@ -201,7 +201,7 @@ public class akgService extends RESTService {
 					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
 			return Response.ok().entity(jsonBody).build();
 		}
-		String content = jsonBody.getAsString(entities.getAsString(entityName));
+		String content = jsonBody.getAsString(((JSONObject)entities.get(entityName)).getAsString("value"));
 		// xapi nutzer vergleicht/compared terme + seminar thema 
 		//monitor event : ntzer hat verglichen
 		JSONObject actor = new JSONObject();
