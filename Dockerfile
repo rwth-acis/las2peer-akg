@@ -1,4 +1,4 @@
-FROM openjdk:14-jdk-alpine
+FROM openjdk:17-jdk-alpine
 
 ENV HTTP_PORT=8080
 ENV HTTPS_PORT=8443
@@ -18,7 +18,7 @@ WORKDIR /src
 USER las2peer
 RUN dos2unix gradlew
 RUN dos2unix /src/docker-entrypoint.sh
-#RUN chmod -R a+rwx /src
+RUN chmod -R a+rwx /src
 #RUN chmod +x /src/docker-entrypoint.sh
 #RUN dos2unix /src/etc/i5.las2peer.connectors.webConnector.WebConnector.properties
 #RUN dos2unix /src/etc/i5.las2peer.services.las2peer-akg.akgService.properties
