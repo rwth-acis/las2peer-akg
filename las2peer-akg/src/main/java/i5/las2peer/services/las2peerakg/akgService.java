@@ -363,6 +363,7 @@ public class akgService extends RESTService {
 		JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
 		jsonBody = (JSONObject) p.parse(body);
 		String entityName = jsonBody.getAsString("entityName");
+		System.out.println(entityName);
 		JSONObject entities = (JSONObject) jsonBody.get("entities");
 		if (entities.get(entityName) == null) {
 			// error, given entityname is not part of the recognized entities
@@ -373,7 +374,7 @@ public class akgService extends RESTService {
 			return Response.ok().entity(jsonBody).build();
 		}
 		entityName = entities.getAsString(entityName);
-		
+		System.out.println(entityName);
 		MiniClient client = new MiniClient();
 		// add var for address here
 		client.setConnectorEndpoint("http://137.226.232.175:32303");
