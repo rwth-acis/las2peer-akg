@@ -440,7 +440,7 @@ public class akgService extends RESTService {
 				
 			}
 		}
-		s = String.join(", ", (String[]) keywords.toArray());
+		s = String.join(", ", keywords.toArray(new String[0]));
 		System.out.println("text is "+s);
 		JSONObject jsonResponse = new JSONObject();
 		if(s.equals("")) {
