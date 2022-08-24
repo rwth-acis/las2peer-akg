@@ -263,7 +263,7 @@ public class akgService extends RESTService {
 					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
 			return Response.ok().entity(jsonBody).build();
 		}
-		entityName = entities.getAsString(entityName);
+		entityName = ((JSONObject) entities.get(entityName)).getAsString("value");
 		String text = jsonBody.getAsString("msg");
 		String[] words = text.split(",");
 		MiniClient client = new MiniClient();
