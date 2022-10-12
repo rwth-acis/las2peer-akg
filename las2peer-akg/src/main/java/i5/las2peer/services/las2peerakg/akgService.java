@@ -369,7 +369,7 @@ public class akgService extends RESTService {
 				reqbody.put("graph", graph);
 				r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
 						"application/json", "application/json", headers);
-				JSONObject result = (JSONObject) p.parse(r.getResponse());
+				result = (JSONObject) p.parse(r.getResponse());
 				System.out.println(result);
 				if (result.keySet().size() > 1) {
 					counter++;
