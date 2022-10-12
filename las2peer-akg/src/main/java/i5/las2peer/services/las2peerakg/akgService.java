@@ -333,8 +333,6 @@ public class akgService extends RESTService {
 			String wordTrimmed = words[i].trim();
 			terms.add(wordTrimmed);
 			String wordTrimmedUmlaute = replaceUmlauteBack(wordTrimmed);
-			if(!wordTrimmed.equals(wordTrimmedUmlaute))
-				terms.add(wordTrimmedUmlaute);
 
 			reqbody.put("terms", terms);
 			reqbody.put("graph", graph);
@@ -363,6 +361,37 @@ public class akgService extends RESTService {
 				}
 				
 			}
+			if(s.equals("") && !wordTrimmed.equals(wordTrimmedUmlaute)){
+				terms = new JSONArray();
+				reqbody = new JSONObject();
+				terms.add(wordTrimmedUmlaute);
+				reqbody.put("terms", terms);
+				reqbody.put("graph", graph);
+				ClientResponse r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
+						"application/json", "application/json", headers);
+				JSONObject result = (JSONObject) p.parse(r.getResponse());
+				System.out.println(result);
+				if (result.keySet().size() > 1) {
+					counter++;
+					JSONArray materials = (JSONArray) result.get("@graph");
+					if(materials!=null){
+						for (Object j : materials) {
+							JSONObject jo = (JSONObject) j;
+							if(!jo.getAsString("title").equals("")) {
+								s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
+										+ jo.getAsString("link") + ")";
+								System.out.println("Adding Material");
+							}
+						}
+					}else{
+						if(result.get("link")!=null){
+							s += "\\n" + words[i] + ": [" + result.getAsString("title") + "]("
+									+ result.getAsString("link") + ")";
+							System.out.println("Adding Material");
+						}
+					}
+			}
+				
 			System.out.println("done with word" + i);
 		}
 		System.out.println("text is "+s);
