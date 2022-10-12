@@ -349,10 +349,10 @@ public class akgService extends RESTService {
 					for (Object j : materials) {
 						JSONObject jo = (JSONObject) j;
 						if(!jo.getAsString("title").equals("")) {
-						s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
-								+ jo.getAsString("link") + ")";
-						System.out.println("Adding Material");
-						
+							s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
+									+ jo.getAsString("link") + ")";
+							System.out.println("Adding Material");
+						}
 					}
 				}else{
 					if(result.get("link")!=null){
