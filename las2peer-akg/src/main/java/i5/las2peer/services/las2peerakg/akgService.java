@@ -367,7 +367,7 @@ public class akgService extends RESTService {
 				terms.add(wordTrimmedUmlaute);
 				reqbody.put("terms", terms);
 				reqbody.put("graph", graph);
-				ClientResponse r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
+				r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
 						"application/json", "application/json", headers);
 				JSONObject result = (JSONObject) p.parse(r.getResponse());
 				System.out.println(result);
