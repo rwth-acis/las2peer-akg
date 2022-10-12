@@ -367,13 +367,13 @@ public class akgService extends RESTService {
 				terms.add(wordTrimmedUmlaute);
 				reqbody.put("terms", terms);
 				reqbody.put("graph", graph);
-				r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
+				ClientResponse r2 = client.sendRequest("POST", "materials", reqbody.toJSONString(),
 						"application/json", "application/json", headers);
-				result = (JSONObject) p.parse(r.getResponse());
-				System.out.println(result);
-				if (result.keySet().size() > 1) {
+				JSONObject result2 = (JSONObject) p.parse(r2.getResponse());
+				System.out.println(result2);
+				if (result2.keySet().size() > 1) {
 					counter++;
-					JSONArray materials = (JSONArray) result.get("@graph");
+					JSONArray materials = (JSONArray) result2.get("@graph");
 					if(materials!=null){
 						for (Object j : materials) {
 							JSONObject jo = (JSONObject) j;
@@ -384,9 +384,9 @@ public class akgService extends RESTService {
 							}
 						}
 					}else{
-						if(result.get("link")!=null){
-							s += "\\n" + words[i] + ": [" + result.getAsString("title") + "]("
-									+ result.getAsString("link") + ")";
+						if(result2.get("link")!=null){
+							s += "\\n" + words[i] + ": [" + result2.getAsString("title") + "]("
+									+ result2.getAsString("link") + ")";
 							System.out.println("Adding Material");
 						}
 					}
