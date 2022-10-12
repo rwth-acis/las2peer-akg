@@ -240,6 +240,19 @@ public class akgService extends RESTService {
 		return Response.ok().entity(jsonBody).build();
 
 	}
+
+	// helper
+
+	private String replaceUmlauteBack(String output){
+		String newString = output.replace("\u00fc", "ue")
+            .replace("oe","\u00f6")
+            .replace("ae","\u00e4")
+            .replace("ss","\u00df")
+            .replace("UE", "\u00dc")
+            .replace("OE", "\u00d6")
+            .replace("AE", "\u00c4");
+    	return newString;
+	} 
 	
 	@POST
 	@Path("/suggestMaterial")
@@ -317,7 +330,12 @@ public class akgService extends RESTService {
 		for (int i = 0; i < words.length; i++) {
 			JSONObject reqbody = new JSONObject();
 			JSONArray terms = new JSONArray();
-			terms.add(words[i].trim());
+			String wordTrimmed = words[i].trim();
+			terms.add(wordTrimmed);
+			String wordTrimmedUmlaute = replaceUmlauteBack(wordTrimmed);
+			if(!wordTrimmed.equals(wordTrimmedUmlaute))
+				terms.add(wordTrimmedUmlaute);
+
 			reqbody.put("terms", terms);
 			reqbody.put("graph", graph);
 			ClientResponse r = client.sendRequest("POST", "materials", reqbody.toJSONString(),
@@ -327,14 +345,23 @@ public class akgService extends RESTService {
 			if (result.keySet().size() > 1) {
 				counter++;
 				JSONArray materials = (JSONArray) result.get("@graph");
-				for (Object j : materials) {
-					JSONObject jo = (JSONObject) j;
-					if(!jo.getAsString("title").equals("")) {
-					s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
-							+ jo.getAsString("link") + ")";
-					System.out.println("Adding Material");
+				if(materials!=null){
+					for (Object j : materials) {
+						JSONObject jo = (JSONObject) j;
+						if(!jo.getAsString("title").equals("")) {
+						s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
+								+ jo.getAsString("link") + ")";
+						System.out.println("Adding Material");
+						
+					}
+				}else{
+					if(result.get("link")!=null){
+						s += "\\n" + words[i] + ": [" + result.getAsString("title") + "]("
+								+ result.getAsString("link") + ")";
+						System.out.println("Adding Material");
 					}
 				}
+				
 			}
 			System.out.println("done with word" + i);
 		}
