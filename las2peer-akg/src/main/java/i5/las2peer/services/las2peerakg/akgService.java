@@ -390,6 +390,7 @@ public class akgService extends RESTService {
 							System.out.println("Adding Material");
 						}
 					}
+				}
 			}
 				
 			System.out.println("done with word" + i);
