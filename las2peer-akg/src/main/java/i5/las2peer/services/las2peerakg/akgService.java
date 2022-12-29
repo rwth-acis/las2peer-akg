@@ -29,7 +29,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
 import i5.las2peer.api.Context;
 import i5.las2peer.api.security.UserAgent;
 import i5.las2peer.connectors.webConnector.client.ClientResponse;
@@ -86,6 +85,13 @@ public class akgService extends RESTService {
 		String userMail = jsonBody.getAsString("email");
 		String entityName = jsonBody.getAsString("entityName");
 		JSONObject entities = (JSONObject) jsonBody.get("entities");
+		String lrsAuthToken = "";
+		try {
+			lrsAuthToken = jsonBody.getAsString("lrsToken");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if (entities.get(entityName) == null) {
 			// error, given entityname is not part of the recognized entities
 			// return something
@@ -99,8 +105,9 @@ public class akgService extends RESTService {
 		}
 		System.out.println(entities);
 		System.out.println(entityName);
-		System.out.println(((JSONObject)entities.get(entityName)).getAsString("value"));
-		String[] correctWords = jsonBody.getAsString(((JSONObject)entities.get(entityName)).getAsString("value")).split(",");
+		System.out.println(((JSONObject) entities.get(entityName)).getAsString("value"));
+		String[] correctWords = jsonBody.getAsString(((JSONObject) entities.get(entityName)).getAsString("value"))
+				.split(",");
 		String[] userWord = jsonBody.getAsString("msg").split(",");
 		if (userWord.length != 5) {
 			// return error that the number of examples is not right
@@ -114,10 +121,11 @@ public class akgService extends RESTService {
 		String answers = "";
 		for (String word : userWord) {
 			for (String correctWord : correctWords) {
-				if (word.toLowerCase().replaceAll("\\s+", "").equals(correctWord.toLowerCase().replaceAll("\\s+", ""))) {
+				if (word.toLowerCase().replaceAll("\\s+", "")
+						.equals(correctWord.toLowerCase().replaceAll("\\s+", ""))) {
 					matches++;
-					if(answers.equals("")) {
-						answers += correctWord.toLowerCase().replaceAll("\\s+", ""); 
+					if (answers.equals("")) {
+						answers += correctWord.toLowerCase().replaceAll("\\s+", "");
 					} else {
 						answers += ", " + correctWord.toLowerCase().replaceAll("\\s+", "");
 					}
@@ -125,9 +133,9 @@ public class akgService extends RESTService {
 			}
 		}
 
-		// xapi nutzer vergleicht/compared terme + seminar thema 
-		//monitor event : ntzer hat verglichen
-		
+		// xapi nutzer vergleicht/compared terme + seminar thema
+		// monitor event : ntzer hat verglichen
+
 		JSONObject actor = new JSONObject();
 		actor.put("objectType", "Agent");
 		JSONObject account = new JSONObject();
@@ -137,48 +145,65 @@ public class akgService extends RESTService {
 		actor.put("account", account);
 		// compared_words
 		JSONObject verb = (JSONObject) p
-				.parse(new String("{'display':{'en-US':'compared_words'},'id':'https://tech4comp.de/xapi/verb/compared_words'}"));
+				.parse(new String(
+						"{'display':{'en-US':'compared_words'},'id':'https://tech4comp.de/xapi/verb/compared_words'}"));
 		JSONObject object = (JSONObject) p
-				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" + entities.get(entityName)
+				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
+						+ entities.get(entityName)
 						+ "'}, 'description':{'en-US':'" + entities.get(entityName)
 						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 		try {
-		JSONObject context = (JSONObject) p
-				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'userAnswers':'"
-						+ jsonBody.getAsString("msg") + "', 'word1':'"+ jsonBody.getAsString("msg").split(",")[0].toLowerCase().replaceAll("\\s","") +"', 'word2':'"+ jsonBody.getAsString("msg").split(",")[1].toLowerCase().replaceAll("\\s","") +"', 'word3':'"+ jsonBody.getAsString("msg").split(",")[2].toLowerCase().replaceAll("\\s","") +"', 'word4':'"+ jsonBody.getAsString("msg").split(",")[3].toLowerCase().replaceAll("\\s","") +"', 'word5':'"+ jsonBody.getAsString("msg").split(",")[4].toLowerCase().replaceAll("\\s","") +"','score':'"+ matches+"'}}}"));
-		JSONObject xAPI = new JSONObject();
+			JSONObject context = (JSONObject) p
+					.parse(new String(
+							"{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'userAnswers':'"
+									+ jsonBody.getAsString("msg") + "', 'word1':'"
+									+ jsonBody.getAsString("msg").split(",")[0].toLowerCase().replaceAll("\\s", "")
+									+ "', 'word2':'"
+									+ jsonBody.getAsString("msg").split(",")[1].toLowerCase().replaceAll("\\s", "")
+									+ "', 'word3':'"
+									+ jsonBody.getAsString("msg").split(",")[2].toLowerCase().replaceAll("\\s", "")
+									+ "', 'word4':'"
+									+ jsonBody.getAsString("msg").split(",")[3].toLowerCase().replaceAll("\\s", "")
+									+ "', 'word5':'"
+									+ jsonBody.getAsString("msg").split(",")[4].toLowerCase().replaceAll("\\s", "")
+									+ "','score':'" + matches + "'}}}"));
+			JSONObject xAPI = new JSONObject();
 
-		xAPI.put("authority", p.parse(
-				new String("{'objectType': 'Agent','name': 'New Client', 'mbox': 'mailto:hello@learninglocker.net'}")));
-		xAPI.put("context", context); //
-		// xAPI.put("timestamp", java.time.LocalDateTime.now());
-		xAPI.put("actor", actor);
-		xAPI.put("object", object);
-		xAPI.put("verb", verb);
-		
-		
-		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
-		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_96, xAPI.toString());
-		} catch(Exception e) {
+			xAPI.put("authority", p.parse(
+					new String(
+							"{'objectType': 'Agent','name': 'New Client', 'mbox': 'mailto:hello@learninglocker.net'}")));
+			xAPI.put("context", context); //
+			// xAPI.put("timestamp", java.time.LocalDateTime.now());
+			xAPI.put("actor", actor);
+			xAPI.put("object", object);
+			xAPI.put("verb", verb);
+			sendXAPIStatement(xAPI, lrsAuthToken);
+			Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69,
+					xAPI.toString() + "*" + jsonBody.getAsString("email"));
+			Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_96, xAPI.toString());
+		} catch (Exception e) {
 			System.out.println("error?");
 			e.printStackTrace();
 		}
 
 		jsonBody = new JSONObject();
 		jsonBody.put("text", matches
-				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes (" + answers + ").  \r\n"
+				+ " von deinen assoziierten Begriffen sind auch Schl\u00FCsselkonzepte des Textes (" + answers
+				+ ").  \r\n"
 				+ " Versuche sp\u00E4ter beim Lesen noch mehr Schl\u00FCsselbegriffe zu finden und reflektiere, wie du das Gelesene in dein bisheriges Wissen integrieren kannst und was f\u00FCr dich neu ist.  \r\n"
 				+ " \r\n" + " M\u00F6chtest du noch weitere Assoziationen abgleichen?");
 		return Response.ok().entity(jsonBody).build();
-		// $X von deinen assoziierten Begriffen sind auch Schl������sselkonzepte des Textes.
-		// \n Versuche sp������ter beim Lesen noch mehr Schl������sselbegriffe zu finden und
+		// $X von deinen assoziierten Begriffen sind auch Schl������sselkonzepte des
+		// Textes.
+		// \n Versuche sp������ter beim Lesen noch mehr Schl������sselbegriffe zu finden
+		// und
 		// reflektiere, wie du das Gelesene in dein bisheriges Wissen integrieren kannst
-		// und was f������r dich neu ist. \n\n M������chtest du noch weitere Assoziationen
+		// und was f������r dich neu ist. \n\n M������chtest du noch weitere
+		// Assoziationen
 		// abgleichen?
 	}
-	
-	
+
 	@POST
 	@Path("/returnContent")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -194,6 +219,12 @@ public class akgService extends RESTService {
 		String userMail = jsonBody.getAsString("email");
 		String entityName = jsonBody.getAsString("entityName");
 		JSONObject entities = (JSONObject) jsonBody.get("entities");
+		String lrsAuthToken = "";
+		try {
+			lrsAuthToken = jsonBody.getAsString("lrsToken");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (entities.get(entityName) == null) {
 			// error, given entityname is not part of the recognized entities
 			// return something
@@ -202,9 +233,9 @@ public class akgService extends RESTService {
 					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
 			return Response.ok().entity(jsonBody).build();
 		}
-		String content = jsonBody.getAsString(((JSONObject)entities.get(entityName)).getAsString("value"));
-		// xapi nutzer vergleicht/compared terme + seminar thema 
-		//monitor event : ntzer hat verglichen
+		String content = jsonBody.getAsString(((JSONObject) entities.get(entityName)).getAsString("value"));
+		// xapi nutzer vergleicht/compared terme + seminar thema
+		// monitor event : ntzer hat verglichen
 		JSONObject actor = new JSONObject();
 		actor.put("objectType", "Agent");
 		JSONObject account = new JSONObject();
@@ -214,15 +245,18 @@ public class akgService extends RESTService {
 		actor.put("account", account);
 		// compared_words
 		JSONObject verb = (JSONObject) p
-				.parse(new String("{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/return_content'}"));
+				.parse(new String(
+						"{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/return_content'}"));
 		JSONObject object = (JSONObject) p
-				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" +  jsonBody.getAsString(entities.getAsString(entityName))
+				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
+						+ jsonBody.getAsString(entities.getAsString(entityName))
 						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
 						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 		JSONObject context = (JSONObject) p
-				.parse(new String("{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'returnedContent':'"
-						+ content + "'}}}"));
+				.parse(new String(
+						"{'extensions':{'https://tech4comp.de/xapi/context/extensions/filecontent':{'returnedContent':'"
+								+ content + "'}}}"));
 		JSONObject xAPI = new JSONObject();
 
 		xAPI.put("authority", p.parse(
@@ -232,9 +266,11 @@ public class akgService extends RESTService {
 		xAPI.put("actor", actor);
 		xAPI.put("object", object);
 		xAPI.put("verb", verb);
-		
+
 		System.out.println(xAPI.toString());
-		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69, xAPI.toString() + "*" + jsonBody.getAsString("email"));
+		sendXAPIStatement(xAPI, lrsAuthToken);
+		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69,
+				xAPI.toString() + "*" + jsonBody.getAsString("email"));
 		jsonBody = new JSONObject();
 		jsonBody.put("text", content);
 		return Response.ok().entity(jsonBody).build();
@@ -243,17 +279,17 @@ public class akgService extends RESTService {
 
 	// helper
 
-	private String replaceUmlauteBack(String output){
+	private String replaceUmlauteBack(String output) {
 		String newString = output.replace("\u00fc", "ue")
-            .replace("oe","\u00f6")
-            .replace("ae","\u00e4")
-            .replace("ss","\u00df")
-            .replace("UE", "\u00dc")
-            .replace("OE", "\u00d6")
-            .replace("AE", "\u00c4");
-    	return newString;
-	} 
-	
+				.replace("oe", "\u00f6")
+				.replace("ae", "\u00e4")
+				.replace("ss", "\u00df")
+				.replace("UE", "\u00dc")
+				.replace("OE", "\u00d6")
+				.replace("AE", "\u00c4");
+		return newString;
+	}
+
 	@POST
 	@Path("/suggestMaterial")
 	@Consumes(MediaType.TEXT_PLAIN)
@@ -268,6 +304,13 @@ public class akgService extends RESTService {
 		jsonBody = (JSONObject) p.parse(body);
 		String entityName = jsonBody.getAsString("entityName");
 		JSONObject entities = (JSONObject) jsonBody.get("entities");
+		String userMail = jsonBody.getAsString("email");
+		String lrsAuthToken = "";
+		try {
+			lrsAuthToken = jsonBody.getAsString("lrsToken");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (entities.get(entityName) == null) {
 			// error, given entityname is not part of the recognized entities
 			// return something
@@ -286,51 +329,53 @@ public class akgService extends RESTService {
 		int counter = 0;
 		String s = "";
 		String graph = "";
-		if(entityName.equals("Bildungssysteme")) {
+		JSONArray wordJsonArray = new JSONArray();
+		if (entityName.equals("Bildungssysteme")) {
 			graph = "http://tech4comp.de/knowledgeMap/beffea78cb3db849bb00c36faded0e8e";
-		} else if(entityName.equals("Inklusion in Kanada")) {
+		} else if (entityName.equals("Inklusion in Kanada")) {
 			graph = "http://tech4comp.de/knowledgeMap/9553a8dac552d16e9a4aa51de68541ae";
-		} else if(entityName.equals("Deutschland und Kanada im Vergleich")) {
+		} else if (entityName.equals("Deutschland und Kanada im Vergleich")) {
 			graph = "http://tech4comp.de/knowledgeMap/28d0aafb7f9cda9420d2d1c55b32bc41";
-		} else if(entityName.equals("Steuerung im Bildungswesen")) {
+		} else if (entityName.equals("Steuerung im Bildungswesen")) {
 			graph = "http://tech4comp.de/knowledgeMap/dfe11f23419d21ee12f98044a26dc055";
-		} else if(entityName.equals("Bildungswesen der BRD")) {
+		} else if (entityName.equals("Bildungswesen der BRD")) {
 			graph = "http://tech4comp.de/knowledgeMap/ebe36f244610da368fcfd6cef4a5ec63";
-		}else if(entityName.equals("Bildung")) {
+		} else if (entityName.equals("Bildung")) {
 			graph = "http://tech4comp.de/knowledgeMap/ul/biwi/laura";
-		}else if(entityName.equals("Digitalisierung und Bildungswelt")) {
+		} else if (entityName.equals("Digitalisierung und Bildungswelt")) {
 			graph = "http://tech4comp.de/knowledgeMap/e9758f807da573481a76927aff4cfbfa";
-		}else if(entityName.equals("Erziehung")) {
+		} else if (entityName.equals("Erziehung")) {
 			graph = "http://tech4comp.de/knowledgeMap/6a2f4e0eb47907c6b026600e566c6677";
-		}else if(entityName.equals("Führungsstile")) {
+		} else if (entityName.equals("Führungsstile")) {
 			graph = "http://tech4comp.de/knowledgeMap/204d681f56e4c87232193794a457f603";
-		}else if(entityName.equals("Sozialisation")) {
-			graph= "http://tech4comp.de/knowledgeMap/72909bd4c7ae025d65351314455c638f";
-		}else if(entityName.equals("Sozialisation und Medien")) {
-			graph= "http://tech4comp.de/knowledgeMap/26b00db86194a83b0e18b7c2652cfeb6";
-		}else if(entityName.equals("Bildungsgerechtigkeit")) {
+		} else if (entityName.equals("Sozialisation")) {
+			graph = "http://tech4comp.de/knowledgeMap/72909bd4c7ae025d65351314455c638f";
+		} else if (entityName.equals("Sozialisation und Medien")) {
+			graph = "http://tech4comp.de/knowledgeMap/26b00db86194a83b0e18b7c2652cfeb6";
+		} else if (entityName.equals("Bildungsgerechtigkeit")) {
 			graph = "http://tech4comp.de/knowledgeMap/98dc514f500ab6de937f0c9c7736eb87";
-		}else if(entityName.equals("Meritokratische Illusion")) {
+		} else if (entityName.equals("Meritokratische Illusion")) {
 			graph = "http://tech4comp.de/knowledgeMap/69214204b3bad1907f85b2e5debd5c0d";
-		}else if(entityName.equals("PISA")) {
+		} else if (entityName.equals("PISA")) {
 			graph = "http://tech4comp.de/knowledgeMap/004d7bd0b4cd76748598815569035e02";
-		}else if(entityName.equals("PISA-Ergebnisse")) {
+		} else if (entityName.equals("PISA-Ergebnisse")) {
 			graph = "http://tech4comp.de/knowledgeMap/38c740da987008ec6af185b70f75776f";
-		}else if(entityName.equals("Inklusion und Bildungsgerechtigkeit")) {
+		} else if (entityName.equals("Inklusion und Bildungsgerechtigkeit")) {
 			graph = "http://tech4comp.de/knowledgeMap/325ea363af0e79171ed4152c2aaee308";
-		}else if(entityName.equals("Massnahmen zur Inklusion in Sachsen")) {
+		} else if (entityName.equals("Massnahmen zur Inklusion in Sachsen")) {
 			graph = "http://tech4comp.de/knowledgeMap/fbb4a0a6099673ae0f5f666a3ea97c03";
-		}else if(entityName.equals("Inklusiver Unterricht in Kanada")) {
+		} else if (entityName.equals("Inklusiver Unterricht in Kanada")) {
 			graph = "http://tech4comp.de/knowledgeMap/ca19296fab26fbf27c1689ff81b1c58e";
-		}else if(entityName.equals("Kritik am kanadischen Bildungssystem")) {
+		} else if (entityName.equals("Kritik am kanadischen Bildungssystem")) {
 			graph = "http://tech4comp.de/knowledgeMap/efa2782c5556dc4f345e35d41b2880a4";
-		}else {
-			graph= "noname";
+		} else {
+			graph = "noname";
 		}
 		for (int i = 0; i < words.length; i++) {
 			JSONObject reqbody = new JSONObject();
 			JSONArray terms = new JSONArray();
 			String wordTrimmed = words[i].trim();
+			wordJsonArray.add(wordTrimmed);
 			terms.add(wordTrimmed);
 			String wordTrimmedUmlaute = replaceUmlauteBack(wordTrimmed);
 
@@ -343,25 +388,25 @@ public class akgService extends RESTService {
 			if (result.keySet().size() > 1) {
 				counter++;
 				JSONArray materials = (JSONArray) result.get("@graph");
-				if(materials!=null){
+				if (materials != null) {
 					for (Object j : materials) {
 						JSONObject jo = (JSONObject) j;
-						if(!jo.getAsString("title").equals("")) {
+						if (!jo.getAsString("title").equals("")) {
 							s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
 									+ jo.getAsString("link") + ")";
 							System.out.println("Adding Material");
 						}
 					}
-				}else{
-					if(result.get("link")!=null){
+				} else {
+					if (result.get("link") != null) {
 						s += "\\n" + words[i] + ": [" + result.getAsString("title") + "]("
 								+ result.getAsString("link") + ")";
 						System.out.println("Adding Material");
 					}
 				}
-				
+
 			}
-			if(s.equals("") && !wordTrimmed.equals(wordTrimmedUmlaute)){
+			if (s.equals("") && !wordTrimmed.equals(wordTrimmedUmlaute)) {
 				terms = new JSONArray();
 				reqbody = new JSONObject();
 				terms.add(wordTrimmedUmlaute);
@@ -376,17 +421,17 @@ public class akgService extends RESTService {
 				if (result2.keySet().size() > 1) {
 					counter++;
 					JSONArray materials = (JSONArray) result2.get("@graph");
-					if(materials!=null){
+					if (materials != null) {
 						for (Object j : materials) {
 							JSONObject jo = (JSONObject) j;
-							if(!jo.getAsString("title").equals("")) {
+							if (!jo.getAsString("title").equals("")) {
 								s += "\\n" + words[i] + ": [" + jo.getAsString("title") + "]("
 										+ jo.getAsString("link") + ")";
 								System.out.println("Adding Material");
 							}
 						}
-					}else{
-						if(result2.get("link")!=null){
+					} else {
+						if (result2.get("link") != null) {
 							s += "\\n" + words[i] + ": [" + result2.getAsString("title") + "]("
 									+ result2.getAsString("link") + ")";
 							System.out.println("Adding Material");
@@ -394,19 +439,90 @@ public class akgService extends RESTService {
 					}
 				}
 			}
-				
+
 			System.out.println("done with word " + wordTrimmed);
 		}
-		System.out.println("text is "+s);
+		System.out.println("text is " + s);
 		JSONObject jsonResponse = new JSONObject();
-		if(s.equals("")) {
+		if (s.equals("")) {
 			jsonResponse.put("text", jsonBody.getAsString("missingMaterial"));
 			System.out.println("Result empty");
 		} else {
 			jsonResponse.put("text", s);
 			System.out.println("Result not empty");
+			JSONObject actor = new JSONObject();
+			actor.put("objectType", "Agent");
+			JSONObject account = new JSONObject();
+
+			account.put("name", encryptThisString(userMail));
+			account.put("homePage", "https://chat.tech4comp.dbis.rwth-aachen.de");
+			actor.put("account", account);
+
+			// compared_words
+			JSONObject verb = (JSONObject) p
+					.parse(new String(
+							"{'display':{'en-US':'received_recommended_material'},'id':'https://tech4comp.de/xapi/verb/received_recommended_material'}"));
+			JSONObject object = (JSONObject) p
+					.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
+							+ jsonBody.getAsString(entities.getAsString(entityName))
+							+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
+							+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/received_recommended_material'},'id':'https://tech4comp.de/biwi5/received_recommended_material"
+							+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
+			JSONObject context = (JSONObject) p
+					.parse(new String(
+							"{'extensions':{'https://tech4comp.de/xapi/context/extensions/keyWords':{'returnedContent':'"
+									+ s + "', 'keyWords':'" + wordJsonArray + "','numberOfKeyWords':'"
+									+ wordJsonArray.size() + "'}}}"));
+			JSONObject xAPI = new JSONObject();
+
+			xAPI.put("authority", p.parse(
+					new String(
+							"{'objectType': 'Agent','name': 'New Client', 'mbox': 'mailto:hello@learninglocker.net'}")));
+			xAPI.put("context", context); //
+			// xAPI.put("timestamp", java.time.LocalDateTime.now());
+			xAPI.put("actor", actor);
+			xAPI.put("object", object);
+			xAPI.put("verb", verb);
+			sendXAPIStatement(xAPI, lrsAuthToken);
 		}
 		return Response.ok().entity(jsonResponse).build();
+	}
+
+	public void sendXAPIStatement(JSONObject xAPI, String lrsAuthToken) {
+		// Copy pasted from LL service
+		// POST statements
+		try {
+			System.out.println(xAPI);
+			URL url = new URL("https://lrs.tech4comp.dbis.rwth-aachen.de/data/xAPI/statements");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+			conn.setRequestProperty("X-Experience-API-Version", "1.0.3");
+			conn.setRequestProperty("Authorization", "Basic " + lrsAuthToken);
+			conn.setRequestProperty("Cache-Control", "no-cache");
+			conn.setUseCaches(false);
+
+			OutputStream os = conn.getOutputStream();
+			os.write(xAPI.toString().getBytes("utf-8"));
+			os.flush();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+			String line = "";
+			StringBuilder response = new StringBuilder();
+
+			while ((line = reader.readLine()) != null) {
+				response.append(line);
+			}
+
+			conn.disconnect();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@POST
@@ -441,69 +557,69 @@ public class akgService extends RESTService {
 		String s = "";
 		ArrayList<String> keywords = new ArrayList<String>();
 		String graph = "";
-		if(entityName.equals("Bildungssysteme")) {
+		if (entityName.equals("Bildungssysteme")) {
 			graph = "http://tech4comp.de/knowledgeMap/beffea78cb3db849bb00c36faded0e8e";
-		} else if(entityName.equals("Inklusion in Kanada")) {
+		} else if (entityName.equals("Inklusion in Kanada")) {
 			graph = "http://tech4comp.de/knowledgeMap/9553a8dac552d16e9a4aa51de68541ae";
-		} else if(entityName.equals("Deutschland und Kanada im Vergleich")) {
+		} else if (entityName.equals("Deutschland und Kanada im Vergleich")) {
 			graph = "http://tech4comp.de/knowledgeMap/28d0aafb7f9cda9420d2d1c55b32bc41";
-		} else if(entityName.equals("Steuerung im Bildungswesen")) {
+		} else if (entityName.equals("Steuerung im Bildungswesen")) {
 			graph = "http://tech4comp.de/knowledgeMap/dfe11f23419d21ee12f98044a26dc055";
-		} else if(entityName.equals("Bildungswesen der BRD")) {
+		} else if (entityName.equals("Bildungswesen der BRD")) {
 			graph = "http://tech4comp.de/knowledgeMap/ebe36f244610da368fcfd6cef4a5ec63";
-		}else if(entityName.equals("Bildung")) {
+		} else if (entityName.equals("Bildung")) {
 			graph = "http://tech4comp.de/knowledgeMap/ul/biwi/laura";
-		}else if(entityName.equals("Digitalisierung und Bildungswelt")) {
+		} else if (entityName.equals("Digitalisierung und Bildungswelt")) {
 			graph = "http://tech4comp.de/knowledgeMap/e9758f807da573481a76927aff4cfbfa";
-		}else if(entityName.equals("Erziehung")) {
+		} else if (entityName.equals("Erziehung")) {
 			graph = "http://tech4comp.de/knowledgeMap/6a2f4e0eb47907c6b026600e566c6677";
-		}else if(entityName.equals("Führungsstile")) {
+		} else if (entityName.equals("Führungsstile")) {
 			graph = "http://tech4comp.de/knowledgeMap/204d681f56e4c87232193794a457f603";
-		}else if(entityName.equals("Sozialisation")) {
-			graph= "http://tech4comp.de/knowledgeMap/72909bd4c7ae025d65351314455c638f";
-		}else if(entityName.equals("Sozialisation und Medien")) {
-			graph= "http://tech4comp.de/knowledgeMap/26b00db86194a83b0e18b7c2652cfeb6";
-		}else if(entityName.equals("Bildungsgerechtigkeit")) {
+		} else if (entityName.equals("Sozialisation")) {
+			graph = "http://tech4comp.de/knowledgeMap/72909bd4c7ae025d65351314455c638f";
+		} else if (entityName.equals("Sozialisation und Medien")) {
+			graph = "http://tech4comp.de/knowledgeMap/26b00db86194a83b0e18b7c2652cfeb6";
+		} else if (entityName.equals("Bildungsgerechtigkeit")) {
 			graph = "http://tech4comp.de/knowledgeMap/98dc514f500ab6de937f0c9c7736eb87";
-		}else if(entityName.equals("Meritokratische Illusion")) {
+		} else if (entityName.equals("Meritokratische Illusion")) {
 			graph = "http://tech4comp.de/knowledgeMap/69214204b3bad1907f85b2e5debd5c0d";
-		}else if(entityName.equals("PISA")) {
+		} else if (entityName.equals("PISA")) {
 			graph = "http://tech4comp.de/knowledgeMap/004d7bd0b4cd76748598815569035e02";
-		}else if(entityName.equals("PISA-Ergebnisse")) {
+		} else if (entityName.equals("PISA-Ergebnisse")) {
 			graph = "http://tech4comp.de/knowledgeMap/38c740da987008ec6af185b70f75776f";
-		}else if(entityName.equals("Inklusion und Bildungsgerechtigkeit")) {
+		} else if (entityName.equals("Inklusion und Bildungsgerechtigkeit")) {
 			graph = "http://tech4comp.de/knowledgeMap/325ea363af0e79171ed4152c2aaee308";
-		}else if(entityName.equals("Massnahmen zur Inklusion in Sachsen")) {
+		} else if (entityName.equals("Massnahmen zur Inklusion in Sachsen")) {
 			graph = "http://tech4comp.de/knowledgeMap/fbb4a0a6099673ae0f5f666a3ea97c03";
-		}else if(entityName.equals("Inklusiver Unterricht in Kanada")) {
+		} else if (entityName.equals("Inklusiver Unterricht in Kanada")) {
 			graph = "http://tech4comp.de/knowledgeMap/ca19296fab26fbf27c1689ff81b1c58e";
-		}else if(entityName.equals("Kritik am kanadischen Bildungssystem")) {
+		} else if (entityName.equals("Kritik am kanadischen Bildungssystem")) {
 			graph = "http://tech4comp.de/knowledgeMap/efa2782c5556dc4f345e35d41b2880a4";
-		}else {
-			graph= "noname";
+		} else {
+			graph = "noname";
 		}
 		JSONObject reqbody = new JSONObject();
 		reqbody.put("graph", graph);
 		ClientResponse r = client.sendRequest("POST", "materials/keywords", reqbody.toJSONString(),
-					"application/json", "application/json", headers);
+				"application/json", "application/json", headers);
 		JSONObject result = (JSONObject) p.parse(r.getResponse());
 		System.out.println(result);
 		if (result.keySet().size() > 1) {
 			JSONArray materials = (JSONArray) result.get("@graph");
 			for (Object j : materials) {
 				JSONObject jo = (JSONObject) j;
-				if(jo.get("label")!= null){
+				if (jo.get("label") != null) {
 					JSONObject keywordObject = (JSONObject) jo.get("label");
 					String keyword = keywordObject.getAsString("@value");
 					keywords.add(keyword);
 				}
-				
+
 			}
 		}
 		s = String.join(", ", keywords.toArray(new String[0]));
-		System.out.println("text is "+s);
+		System.out.println("text is " + s);
 		JSONObject jsonResponse = new JSONObject();
-		if(s.equals("")) {
+		if (s.equals("")) {
 			jsonResponse.put("text", jsonBody.getAsString("missingMaterial"));
 			System.out.println("Result empty");
 		} else {
@@ -513,7 +629,6 @@ public class akgService extends RESTService {
 		return Response.ok().entity(jsonResponse).build();
 	}
 
-	
 	public static String encryptThisString(String input) {
 		try {
 			// getInstance() method is called with algorithm SHA-384
