@@ -216,7 +216,7 @@ public class akgService extends RESTService {
 		JSONObject verb = (JSONObject) p
 				.parse(new String("{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/return_content'}"));
 		JSONObject object = (JSONObject) p
-				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" + "returnContent"
+				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'" +  jsonBody.getAsString(entities.getAsString(entityName))
 						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
 						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
