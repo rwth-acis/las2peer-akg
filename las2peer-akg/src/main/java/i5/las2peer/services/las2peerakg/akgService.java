@@ -149,8 +149,8 @@ public class akgService extends RESTService {
 						"{'display':{'en-US':'compared_words'},'id':'https://tech4comp.de/xapi/verb/compared_words'}"));
 		JSONObject object = (JSONObject) p
 				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
-						+ entities.get(entityName)
-						+ "'}, 'description':{'en-US':'" + entities.get(entityName)
+						+ ((JSONObject) entities.get(entityName)).getAsString("value")
+						+ "'}, 'description':{'en-US':'" + ((JSONObject) entities.get(entityName)).getAsString("value")
 						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 		try {
