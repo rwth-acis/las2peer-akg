@@ -249,8 +249,8 @@ public class akgService extends RESTService {
 						"{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/return_content'}"));
 		JSONObject object = (JSONObject) p
 				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
-						+ jsonBody.getAsString(entities.getAsString(entityName))
-						+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
+						+ entities.getAsString(entityName)
+						+ "'}, 'description':{'en-US':'" + entities.getAsString(entityName)
 						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/compareWords'},'id':'https://tech4comp.de/biwi5/returnContent"
 						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 		JSONObject context = (JSONObject) p
@@ -464,8 +464,8 @@ public class akgService extends RESTService {
 							"{'display':{'en-US':'received_recommended_material'},'id':'https://tech4comp.de/xapi/verb/received_recommended_material'}"));
 			JSONObject object = (JSONObject) p
 					.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
-							+ jsonBody.getAsString(entities.getAsString(entityName))
-							+ "'}, 'description':{'en-US':'" + jsonBody.getAsString(entities.getAsString(entityName))
+							+ entities.getAsString(entityName)
+							+ "'}, 'description':{'en-US':'" + entities.getAsString(entityName)
 							+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/received_recommended_material'},'id':'https://tech4comp.de/biwi5/received_recommended_material"
 							+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 			JSONObject context = (JSONObject) p
