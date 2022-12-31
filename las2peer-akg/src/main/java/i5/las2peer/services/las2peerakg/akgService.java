@@ -319,7 +319,7 @@ public class akgService extends RESTService {
 					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
 			return Response.ok().entity(jsonBody).build();
 		}
-
+		String entityValue= ((JSONObject) entities.get(entityName)).getAsString("value");
 		String text = jsonBody.getAsString("msg");
 		String[] words = text.split(",");
 		MiniClient client = new MiniClient();
@@ -330,43 +330,43 @@ public class akgService extends RESTService {
 		String s = "";
 		String graph = "";
 		JSONArray wordJsonArray = new JSONArray();
-		if (entityName.equals("Bildungssysteme")) {
+		if (entityValue.equals("Bildungssysteme")) {
 			graph = "http://tech4comp.de/knowledgeMap/beffea78cb3db849bb00c36faded0e8e";
-		} else if (entityName.equals("Inklusion in Kanada")) {
+		} else if (entityValue.equals("Inklusion in Kanada")) {
 			graph = "http://tech4comp.de/knowledgeMap/9553a8dac552d16e9a4aa51de68541ae";
-		} else if (entityName.equals("Deutschland und Kanada im Vergleich")) {
+		} else if (entityValue.equals("Deutschland und Kanada im Vergleich")) {
 			graph = "http://tech4comp.de/knowledgeMap/28d0aafb7f9cda9420d2d1c55b32bc41";
-		} else if (entityName.equals("Steuerung im Bildungswesen")) {
+		} else if (entityValue.equals("Steuerung im Bildungswesen")) {
 			graph = "http://tech4comp.de/knowledgeMap/dfe11f23419d21ee12f98044a26dc055";
-		} else if (entityName.equals("Bildungswesen der BRD")) {
+		} else if (entityValue.equals("Bildungswesen der BRD")) {
 			graph = "http://tech4comp.de/knowledgeMap/ebe36f244610da368fcfd6cef4a5ec63";
-		} else if (entityName.equals("Bildung")) {
+		} else if (entityValue.equals("Bildung")) {
 			graph = "http://tech4comp.de/knowledgeMap/ul/biwi/laura";
-		} else if (entityName.equals("Digitalisierung und Bildungswelt")) {
+		} else if (entityValue.equals("Digitalisierung und Bildungswelt")) {
 			graph = "http://tech4comp.de/knowledgeMap/e9758f807da573481a76927aff4cfbfa";
-		} else if (entityName.equals("Erziehung")) {
+		} else if (entityValue.equals("Erziehung")) {
 			graph = "http://tech4comp.de/knowledgeMap/6a2f4e0eb47907c6b026600e566c6677";
-		} else if (entityName.equals("Führungsstile")) {
+		} else if (entityValue.equals("Führungsstile")) {
 			graph = "http://tech4comp.de/knowledgeMap/204d681f56e4c87232193794a457f603";
-		} else if (entityName.equals("Sozialisation")) {
+		} else if (entityValue.equals("Sozialisation")) {
 			graph = "http://tech4comp.de/knowledgeMap/72909bd4c7ae025d65351314455c638f";
-		} else if (entityName.equals("Sozialisation und Medien")) {
+		} else if (entityValue.equals("Sozialisation und Medien")) {
 			graph = "http://tech4comp.de/knowledgeMap/26b00db86194a83b0e18b7c2652cfeb6";
-		} else if (entityName.equals("Bildungsgerechtigkeit")) {
+		} else if (entityValue.equals("Bildungsgerechtigkeit")) {
 			graph = "http://tech4comp.de/knowledgeMap/98dc514f500ab6de937f0c9c7736eb87";
-		} else if (entityName.equals("Meritokratische Illusion")) {
+		} else if (entityValue.equals("Meritokratische Illusion")) {
 			graph = "http://tech4comp.de/knowledgeMap/69214204b3bad1907f85b2e5debd5c0d";
-		} else if (entityName.equals("PISA")) {
+		} else if (entityValue.equals("PISA")) {
 			graph = "http://tech4comp.de/knowledgeMap/004d7bd0b4cd76748598815569035e02";
-		} else if (entityName.equals("PISA-Ergebnisse")) {
+		} else if (entityValue.equals("PISA-Ergebnisse")) {
 			graph = "http://tech4comp.de/knowledgeMap/38c740da987008ec6af185b70f75776f";
-		} else if (entityName.equals("Inklusion und Bildungsgerechtigkeit")) {
+		} else if (entityValue.equals("Inklusion und Bildungsgerechtigkeit")) {
 			graph = "http://tech4comp.de/knowledgeMap/325ea363af0e79171ed4152c2aaee308";
-		} else if (entityName.equals("Massnahmen zur Inklusion in Sachsen")) {
+		} else if (entityValue.equals("Massnahmen zur Inklusion in Sachsen")) {
 			graph = "http://tech4comp.de/knowledgeMap/fbb4a0a6099673ae0f5f666a3ea97c03";
-		} else if (entityName.equals("Inklusiver Unterricht in Kanada")) {
+		} else if (entityValue.equals("Inklusiver Unterricht in Kanada")) {
 			graph = "http://tech4comp.de/knowledgeMap/ca19296fab26fbf27c1689ff81b1c58e";
-		} else if (entityName.equals("Kritik am kanadischen Bildungssystem")) {
+		} else if (entityValue.equals("Kritik am kanadischen Bildungssystem")) {
 			graph = "http://tech4comp.de/knowledgeMap/efa2782c5556dc4f345e35d41b2880a4";
 		} else {
 			graph = "noname";
@@ -464,8 +464,8 @@ public class akgService extends RESTService {
 							"{'display':{'en-US':'received_recommended_material'},'id':'https://tech4comp.de/xapi/verb/received_recommended_material'}"));
 			JSONObject object = (JSONObject) p
 					.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
-							+ ((JSONObject) entities.get(entityName)).getAsString("value")
-							+ "'}, 'description':{'en-US':'" + ((JSONObject) entities.get(entityName)).getAsString("value")
+							+ entityValue
+							+ "'}, 'description':{'en-US':'" + entityValue
 							+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/received_recommended_material'},'id':'https://tech4comp.de/biwi5/received_recommended_material"
 							+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
 			JSONObject context = (JSONObject) p
