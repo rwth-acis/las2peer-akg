@@ -318,7 +318,7 @@ public class akgService extends RESTService {
 		// compared_words
 		JSONObject verb = (JSONObject) p
 				.parse(new String(
-						"{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/read_literature'}"));
+						"{'display':{'en-US':'read_literature'},'id':'https://tech4comp.de/xapi/verb/read_literature'}"));
 		JSONObject object = (JSONObject) p
 				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
 						+ ((JSONObject) entities.get(entityName)).getAsString("value")
