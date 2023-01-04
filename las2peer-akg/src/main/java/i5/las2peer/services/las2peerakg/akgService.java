@@ -277,6 +277,72 @@ public class akgService extends RESTService {
 
 	}
 
+	@POST
+	@Path("/readText")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "REPLACE THIS WITH AN APPROPRIATE FUNCTION NAME", notes = "REPLACE THIS WITH YOUR NOTES TO THE FUNCTION")
+	@ApiResponses(value = {
+			@ApiResponse(code = HttpURLConnection.HTTP_OK, message = "REPLACE THIS WITH YOUR OK MESSAGE") })
+	public Response readText(String body) throws ParseException, IOException {
+		JSONObject jsonBody = new JSONObject();
+		JSONParser p = new JSONParser(JSONParser.MODE_PERMISSIVE);
+		jsonBody = (JSONObject) p.parse(body);
+		String userMail = jsonBody.getAsString("email");
+		String entityName = jsonBody.getAsString("entityName");
+		JSONObject entities = (JSONObject) jsonBody.get("entities");
+		String lrsAuthToken = "";
+		try {
+			lrsAuthToken = jsonBody.getAsString("lrsToken");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (entities.get(entityName) == null) {
+			// error, given entityname is not part of the recognized entities
+			// return something
+			jsonBody = new JSONObject();
+			jsonBody.put("text",
+					"Es gab ein Problem bei der Erkennung der Literatur, schreibe !exit um wieder von vorne zu beginnen :/");
+			return Response.ok().entity(jsonBody).build();
+		}
+		String content = jsonBody.getAsString(((JSONObject) entities.get(entityName)).getAsString("value"));
+		// xapi nutzer vergleicht/compared terme + seminar thema
+		// monitor event : ntzer hat verglichen
+		JSONObject actor = new JSONObject();
+		actor.put("objectType", "Agent");
+		JSONObject account = new JSONObject();
+
+		account.put("name", encryptThisString(userMail));
+		account.put("homePage", "https://chat.tech4comp.dbis.rwth-aachen.de");
+		actor.put("account", account);
+		// compared_words
+		JSONObject verb = (JSONObject) p
+				.parse(new String(
+						"{'display':{'en-US':'returnedContent'},'id':'https://tech4comp.de/xapi/verb/read_literature'}"));
+		JSONObject object = (JSONObject) p
+				.parse(new String("{'definition':{'interactionType':'other', 'name':{'en-US':'"
+						+ ((JSONObject) entities.get(entityName)).getAsString("value")
+						+ "'}, 'description':{'en-US':'" + ((JSONObject) entities.get(entityName)).getAsString("value")
+						+ "'}, 'type':'https://tech4comp.de/xapi/activitytype/read_literature'},'id':'https://tech4comp.de/biwi5/read_literature"
+						+ encryptThisString(userMail) + "', 'objectType':'Activity'}"));
+		JSONObject xAPI = new JSONObject();
+
+		xAPI.put("authority", p.parse(
+				new String("{'objectType': 'Agent','name': 'New Client', 'mbox': 'mailto:hello@learninglocker.net'}")));
+		// xAPI.put("timestamp", java.time.LocalDateTime.now());
+		xAPI.put("actor", actor);
+		xAPI.put("object", object);
+		xAPI.put("verb", verb);
+
+		System.out.println(xAPI.toString());
+		sendXAPIStatement(xAPI, lrsAuthToken);
+		Context.get().monitorEvent(MonitoringEvent.SERVICE_CUSTOM_MESSAGE_69,
+				xAPI.toString() + "*" + jsonBody.getAsString("email"));
+		jsonBody = new JSONObject();
+		return Response.ok().entity(jsonBody).build();
+
+	}	
+
 	// helper
 
 	private String replaceUmlauteBack(String output) {
